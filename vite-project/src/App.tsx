@@ -1,73 +1,24 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import { generateSecretKey, getPublicKey, finalizeEvent } from 'nostr-tools/pure'
-import { Relay } from 'nostr-tools/relay'
-
-const sk = generateSecretKey() // `sk` is a Uint8Array
-const pk = getPublicKey(sk) // `pk` is a hex string
+import ContactList from './components/contactList'
+import { Contact } from './models/contact.model';
+import * as NOSTRService from './service/nostr.service'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedContact, setSelectedContact] = useState<Contact|null>();
 
-  Relay.connect('wss://relay.mememaps.net/').then((relay) => {
-    console.log(`connected to ${relay.url}`)
-
-    relay.subscribe([
-      {
-        kinds: [1],
-        authors: [pk],
-      },
-    ], {
-      onevent(event) {
-        console.log('got event:', event)
-      }
-    })
-
-    const eventTemplate = {
-      kind: 1,
-      created_at: Math.floor(Date.now() / 1000),
-      tags: [],
-      content: 'hello worlds',
-    }
-    
-    // this assigns the pubkey, calculates the event id and signs the event in a single step
-    const signedEvent = finalizeEvent(eventTemplate, sk)
-    relay.publish(signedEvent).then((event) => {
-      console.log('published event:', event)
-    })
-  })
+  NOSTRService.connect().then(_ => {
+  
+  }).catch(err => alert(err))
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Dispatch</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <ContactList selectedContact={selectedContact} setSelectedContact={setSelectedContact} />
 
-      <div>
-        <h1>Secret Key</h1>
-        <p>{sk}</p>
-        
-        <h1>Public Key</h1>
-        <p>{pk}</p>
+      <div className="main-content">
+        <h1>Welcome to the Contact Page</h1>
+        <p>Here is where the main content will be displayed.</p>
+        <p>Start a chat with {selectedContact?.username}.</p>
       </div>
     </>
   )
