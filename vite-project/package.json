@@ -12,6 +12,7 @@
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@nostr/tools": "npm:@jsr/nostr__tools@^2.11.0",
+    "lucide-react": "^0.483.0",
     "nostr-tools": "^2.11.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

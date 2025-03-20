@@ -3,6 +3,7 @@ import './App.css'
 import ContactList from './components/contactList'
 import { Contact } from './models/contact.model';
 import * as NOSTRService from './service/nostr.service'
+import { Send } from 'lucide-react';
 
 function App() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -51,7 +52,9 @@ function App() {
             onChange={(e) => setMessage(e.target.value)}
             className="chat-input"
           />
-          <button type="submit" className="chat-send">Envoyer</button>
+          <button type="submit" className="chat-send">
+            <Send size={20} />
+          </button>
         </form>
       </div>
     </>
