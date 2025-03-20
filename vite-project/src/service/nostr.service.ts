@@ -1,56 +1,81 @@
-import { generateSecretKey, getPublicKey, finalizeEvent,  } from 'nostr-tools/pure'
+import { generateSecretKey, getPublicKey, finalizeEvent, EventTemplate, } from 'nostr-tools/pure'
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils'
-import { Relay } from 'nostr-tools/relay'
+import { Relay, Subscription } from 'nostr-tools/relay'
+import { recivedMessage } from './chat.service';
 
-let sk: Uint8Array | undefined;
-let pk: string | undefined;
+export const RELAY_NAME = 'wss://relay.mememaps.net/';
 
-export let relay: Relay | null = null;
+type Account = { nPub: string; nSec: Uint8Array }
 
-export function login(_sk: string | undefined) : string[] {
-
-    sk = _sk ? hexToBytes(_sk) : generateSecretKey();
-
-    pk = getPublicKey(sk);
-
-    return [bytesToHex(sk), pk];
-}
+export let relay: Relay | undefined;
+export let account: Account | undefined;
+export let subscription: Subscription | undefined;
 
 export async function connect() {
-    if (relay) {
-        return
-    }
+    if (relay) return;
 
-    relay = await Relay.connect('wss://relay.mememaps.net/')
-    console.log(`connected to ${relay.url}`)
+    relay = await Relay.connect(RELAY_NAME);
 }
 
-export async function subscribe() {
-    if (!relay || !pk || !sk) {
-        throw new Error('Not connected')
-    }
-    relay.subscribe([
-        {
-            kinds: [1],
-            authors: [pk],
-        },
-    ], {
+export function login(privateKey: string | null) {
+    if (!relay)
+        throw new Error("Connection to the relay not establish");
+
+    // generation des clefs
+    if (account) logout();
+
+    const nSec = privateKey ? hexToBytes(privateKey) : generateSecretKey();
+    account = { nSec, nPub: getPublicKey(nSec) };
+
+    // subscribe
+    const lastUpdate = Number.parseInt(localStorage.getItem('dispatch_contacts_lastupdate') ?? Math.floor(Date.now() / 1000).toString());
+
+    subscription = relay.subscribe([{
+        kinds: [1],
+        since: lastUpdate,
+        '#t': ['send-to-' + account.nPub]
+    }], {
         onevent(event) {
-            console.log('got event:', event)
-        }
-    })
+            recivedMessage(event.pubkey, decrypt(event.content, account!.nSec), event.created_at);
+
+            localStorage.setItem('dispatch_contacts_lastupdate', Math.floor(Date.now() / 1000).toString());
+        },
+    });
+
+    localStorage.setItem('dispatch_contacts_lastupdate', Math.floor(Date.now() / 1000).toString());
+
+    return [bytesToHex(account.nSec), account.nPub];
 }
 
-export async function sendMessage(message: string) {
-    if (!relay || !pk || !sk) {
+export function logout() {
+    if (subscription) {
+        subscription.close('logout');
+        subscription = undefined;
+    }
+}
+
+export async function sendMessage(destinationPk: string, message: string) {
+    if (!relay || !account) {
         throw new Error('Not connected')
     }
+
     const eventTemplate = {
         kind: 1,
         created_at: Math.floor(Date.now() / 1000),
-        tags: [],
-        content: message,
+        tags: [['t', 'send-to-' + destinationPk]],
+        content: encrypt(message, destinationPk),
     }
-    const signedEvent = finalizeEvent(eventTemplate, sk)
-    return relay.publish(signedEvent)
+
+    const signedEvent = finalizeEvent(eventTemplate, account.nSec)
+    return relay.publish(signedEvent);
+}
+
+
+// TODO
+function encrypt(str: string, nPub: string) { 
+    return str;
+}
+
+function decrypt(str: string, nSec: Uint8Array) {
+    return str;
 }

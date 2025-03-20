@@ -27,10 +27,9 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
     }
 
     const generateRandomKey = () => {
-        const [_sk, _pk] = NOSTRService.login(undefined);
+        const [_sk, _pk] = NOSTRService.login(null);
         setSelfPk(_pk);
         setPrivateKey(_sk);
-
     }
 
     const submitLogin = (e: any) => {
@@ -38,7 +37,6 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
 
         const [_sk, _pk] = NOSTRService.login(privateKey);
         setSelfPk(_pk);
-
     }
 
     const handleCopy = (e: any) => {
