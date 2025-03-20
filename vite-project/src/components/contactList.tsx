@@ -30,7 +30,7 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
         const [_sk, _pk] = NOSTRService.login(undefined);
         setSelfPk(_pk);
         setPrivateKey(_sk);
-        
+
     }
 
     const submitLogin = (e: any) => {
