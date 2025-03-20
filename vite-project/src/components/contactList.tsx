@@ -54,33 +54,9 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
     return (
         <div className="sidebar">
             <section>
-                <form onSubmit={addContact}>
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="text"
-                        placeholder="Public key"
-                        value={pk}
-                        onChange={(e) => setPk(e.target.value)}
-                        required
-                    />
-                    <button type="submit">Add Contact</button>
-                </form>
+            <img src="src/assets/logo.png" width="150px" class="logo"></img>
+            <h2>Connexion</h2>
 
-                <h2>Contacts</h2>
-                <ul>
-                    {contacts.map(c => (
-                        <li key={c.pk} className={selectedContact && selectedContact.pk == c.pk ? 'activate' : ''} onClick={() => setSelectedContact(c)}>{c.username}</li>
-                    ))}
-                </ul>
-            </section>
-
-            <section>
                 <form onSubmit={submitLogin}>
                     <input
                         type="text"
@@ -102,12 +78,37 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
                         </button>
                     </div>
 
-                    <div style={{ display: "flex", flexDirection: "row", gap: "1rem" }}>
-                        <button type="submit">Login</button>
-                        <button type="button" onClick={() => generateRandomKey()}>Generate account</button>
-                    </div>
+                        <button type="submit">Connexion</button>
+                        <button type="button" onClick={() => generateRandomKey()}>Créer un compte</button>
                 </form>
             </section>
+
+
+            <section>
+    <h2>Discussions</h2>
+    <ul>
+        {contacts.map(c => (
+            <li
+                key={c.pk}
+                className={selectedContact && selectedContact.pk == c.pk ? 'activate' : ''}
+                onClick={() => setSelectedContact(c)}
+            >
+                {c.username}
+            </li>
+        ))}
+    </ul>
+    <ul>
+        {['Alice', 'Bob', 'Charlie'].map((name, index) => (
+            <li key={index}>
+                <strong>{name}</strong><p>Dernier message reçu : "Coucou, ça va ?"</p>
+            </li>
+        ))}
+    </ul>
+
+
+        <button type="submit">+ Ajouter un contact</button>
+</section>
+
         </div>
     );
 }
