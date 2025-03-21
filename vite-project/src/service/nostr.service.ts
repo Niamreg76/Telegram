@@ -4,6 +4,7 @@ import { recivedMessage, setSelfNPub } from './message.service';
 
 import * as nip19 from 'nostr-tools/nip19'
 import * as nip44 from 'nostr-tools/nip44'
+import * as nip04 from 'nostr-tools/nip04'
 import { Message } from '../models/message.models';
 
 export const RELAY_NAME = 'wss://relay.angor.io/';
@@ -89,15 +90,11 @@ export async function sendMessage(destinationPk: string, message: string) : Prom
 async function encrypt(str: string, nPub: string) { 
     if(!account) return '';
 
-    var key = nip44.getConversationKey(account.nSec, nPub);
-
-    return nip44.encrypt(str, key);
+    return await nip04.encrypt(account.nSec, nPub, str);
 }
 
 async function decrypt(str: string, nSec: Uint8Array) {
     if(!account) return '';
 
-    var key = nip44.getConversationKey(account.nSec, account.nPub);
-
-    return nip44.decrypt(str, key);
+    return await nip04.decrypt(nSec, account.nPub, str);
 }
