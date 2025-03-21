@@ -1,4 +1,4 @@
-export type Chat = {
+export type Message = {
     from: string,
     to: string,
     at: number,

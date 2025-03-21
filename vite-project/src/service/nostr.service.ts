@@ -1,11 +1,11 @@
 import { generateSecretKey, getPublicKey, finalizeEvent, EventTemplate, } from 'nostr-tools/pure'
-import { bytesToHex, hexToBytes } from '@noble/hashes/utils'
 import { Relay, Subscription } from 'nostr-tools/relay'
-import { recivedMessage } from './chat.service';
+import { recivedMessage } from './message.service';
 
 import * as nip19 from 'nostr-tools/nip19'
+import { Message } from '../models/message.models';
 
-export const RELAY_NAME = 'wss://relay.mememaps.net/';
+export const RELAY_NAME = 'wss://nostr.wine/';
 
 type Account = { nPub: string; nSec: Uint8Array }
 
@@ -56,7 +56,7 @@ export function logout() {
     }
 }
 
-export async function sendMessage(destinationPk: string, message: string) {
+export async function sendMessage(destinationPk: string, message: string) : Promise<Message> {
     if (!relay || !account) {
         throw new Error('Not connected')
     }
@@ -70,7 +70,14 @@ export async function sendMessage(destinationPk: string, message: string) {
 
     console.log('sending message', eventTemplate)
     const signedEvent = finalizeEvent(eventTemplate, account.nSec)
-    return relay.publish(signedEvent);
+    await relay.publish(signedEvent);
+
+    return {
+        at: eventTemplate.created_at,
+        from: account.nPub,
+        to: destinationPk,
+        content: message
+    }
 }
 
 
