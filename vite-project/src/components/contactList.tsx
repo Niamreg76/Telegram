@@ -110,7 +110,7 @@ function ContactList({ selectedContact, setSelectedContact, newMessages, setNewM
                     <form onSubmit={submitLogin}>
                         <input
                             type="text"
-                            placeholder="Private key"
+                            placeholder="Clé privée"
                             value={nSec}
                             onChange={(e) => setNSec(e.target.value)}
                             required
