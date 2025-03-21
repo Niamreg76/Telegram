@@ -1,4 +1,4 @@
-import { generateSecretKey, getPublicKey, finalizeEvent, EventTemplate, } from 'nostr-tools/pure'
+import { generateSecretKey, getPublicKey, finalizeEvent } from 'nostr-tools/pure'
 import { Relay, Subscription } from 'nostr-tools/relay'
 import { recivedMessage, setSelfNPub } from './message.service';
 
@@ -6,8 +6,6 @@ import * as nip19 from 'nostr-tools/nip19'
 import { Message } from '../models/message.models';
 
 export const RELAY_NAME = 'wss://relay.angor.io/';
-
-const selectedContact = "caca"
 
 type Account = { nPub: string; nSec: Uint8Array }
 
