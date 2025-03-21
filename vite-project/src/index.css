@@ -2,7 +2,6 @@
   box-sizing: border-box;
 }
 
-
 body, html, #root {
   font-family: Helvetica, sans-serif;
   margin: 0 !important;
@@ -11,6 +10,12 @@ body, html, #root {
   height: 100%;
   display: flex;
   flex-direction: row;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] body {
+  background-color: #1a1a1a;
+  color: #f1f1f1;
 }
 
 .copy-password-input-container {
@@ -22,8 +27,10 @@ body, html, #root {
 .copy-password-input {
   flex: 8; /* 80% */
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color, #ccc);
   border-radius: 5px;
+  background-color: var(--background-secondary, #fff);
+  color: var(--text-primary, #000);
 }
 
 .copy-btn {
@@ -32,17 +39,15 @@ body, html, #root {
   align-items: center;
   justify-content: center;
   padding: 0.5rem;
-  background-color: #007bff;
+  background-color: var(--accent-color, #007bff);
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
-
-
 .copy-btn:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-hover, #0056b3);
 }
 
 .copy-btn svg {
@@ -51,8 +56,8 @@ body, html, #root {
 
 .sidebar {
   width: 250px;
-  background-color: #FFF;
-  color: #000;
+  background-color: var(--background-primary, #FFF);
+  color: var(--text-primary, #000);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -76,23 +81,24 @@ body, html, #root {
 }
 
 .sidebar input {
-  background-color: #F0F2F5;
-  color: #54656F;
+  background-color: var(--background-secondary, #F0F2F5);
+  color: var(--text-secondary, #54656F);
 }
 
 .sidebar button {
-  background-color: #459fe6;
+  background-color: var(--accent-color, #459fe6);
   color: white;
   cursor: pointer;
 }
 
 .sidebar button:hover {
-  background-color: #368cce;
+  background-color: var(--accent-hover, #368cce);
 }
 
 .sidebar h2 {
   text-align: center;
   margin-bottom: 20px;
+  color: var(--text-primary, #000);
 }
 
 .sidebar ul {
@@ -101,29 +107,35 @@ body, html, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width : 100%;
+  width: 100%;
+}
+
+.profile-header {
+  background-color: var(--background-secondary, #F0F2F5);
+  color: var(--text-primary, #000);
 }
 
 .sidebar ul li {
   padding: 15px;
-  border-bottom: 1px solid #459fe6;
+  border-bottom: 1px solid var(--accent-color, #459fe6);
   cursor: pointer;
-  background-color: #F0F2F5;
+  background-color: var(--background-secondary, #F0F2F5);
+  color: var(--text-primary, #000);
   margin-bottom: 10px;
   border-radius: 5px;
   width: 100%;
 }
 
-
 .sidebar ul li.active {
-  background-color: #007bff;
+  background-color: var(--accent-color, #007bff);
   color: white;
 }
+
 /* Main Content Styling */
 .main-content {
   width: calc(100% - 250px);
   padding: 20px;
-  background-color: #f4f4f4;
+  background-color: var(--background-secondary, #f4f4f4);
 }
 
 .logo {
@@ -132,29 +144,26 @@ body, html, #root {
   margin-bottom: 20px;
 }
 
-
 h3 {
   margin-top: 20px;
   font-size: 1.2rem;
-  color: #333;
+  color: var(--text-primary, #333);
 }
 
 ul li {
   padding: 10px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border-color, #ddd);
 }
 
 ul li strong {
   font-weight: bold;
-  color: #007bff;
+  color: var(--accent-color, #007bff);
 }
 
 ul li p {
   margin: 5px 0;
-  color: #666;
+  color: var(--text-secondary, #666);
 }
-
-
 
 .avatar {
   display: inline-block;
@@ -168,4 +177,3 @@ ul li p {
   font-weight: bold;
   margin-right: 10px;
 }
-

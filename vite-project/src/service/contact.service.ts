@@ -25,3 +25,9 @@ export function addContact(contact: Contact) : Contact {
     localStorage.setItem(KEY, JSON.stringify(contacts));
     return contact;
 }
+
+export function deleteContact(contactPk: string): void {
+    const contacts = getAllContacts();
+    const updatedContacts = contacts.filter(contact => contact.pk !== contactPk);
+    localStorage.setItem(KEY, JSON.stringify(updatedContacts)); // Utiliser KEY au lieu de 'contacts'
+  }

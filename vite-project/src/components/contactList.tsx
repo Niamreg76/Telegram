@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Contact } from "../models/contact.model";
 import * as ContactService from '../service/contact.service';
-import { FaClipboard, FaChevronDown, FaChevronUp } from 'react-icons/fa';  // Ajout des icônes pour l'accordéon
+import { FaClipboard, FaChevronDown, FaChevronUp, FaTrash } from 'react-icons/fa';  // Ajout de l'icône de suppression
 import * as NOSTRService from '../service/nostr.service'
 import { nip19 } from "nostr-tools";
 import { Message } from "../models/message.models";
@@ -43,6 +43,25 @@ function ContactList({ selectedContact, setSelectedContact, newMessages, setNewM
         setContacts([...contacts, contact]);
         setUsername('');
         setPk('');
+    }
+
+    // Nouvelle fonction pour supprimer un contact
+    const deleteContact = (contactPk: string, e: React.MouseEvent) => {
+        e.stopPropagation(); // Empêche le déclenchement du onClick du li parent
+        
+        if (window.confirm(`Voulez-vous vraiment supprimer ce contact ?`)) {
+            // Appel au service de suppression (à implémenter dans contact.service.ts)
+            ContactService.deleteContact(contactPk);
+            
+            // Mise à jour de l'état local
+            const updatedContacts = contacts.filter(c => c.pk !== contactPk);
+            setContacts(updatedContacts);
+            
+            // Si le contact supprimé est celui qui est sélectionné, désélectionner
+            if (selectedContact && selectedContact.pk === contactPk) {
+                setSelectedContact(null);
+            }
+        }
     }
 
     const generateRandomKey = () => {
@@ -118,7 +137,6 @@ function ContactList({ selectedContact, setSelectedContact, newMessages, setNewM
                             justifyContent: 'space-between',
                             alignItems: 'center',
                             padding: '10px',
-                            backgroundColor: '#f5f5f5',
                             borderRadius: '5px',
                             marginBottom: isProfileOpen ? '10px' : '0'
                         }}
@@ -179,16 +197,23 @@ function ContactList({ selectedContact, setSelectedContact, newMessages, setNewM
                                             {c.username}
                                         </section>
                                         
-                                        {newMessages.filter(x => nip19.npubEncode(x.from) == c?.pk).length > 0 && (
-                                            <div className="badge">{newMessages.filter(x => nip19.npubEncode(x.from) == c?.pk).length}</div>
-                                        )}
+                                        <div className="contact-actions">
+                                            {newMessages.filter(x => nip19.npubEncode(x.from) == c?.pk).length > 0 && (
+                                                <div className="badge">{newMessages.filter(x => nip19.npubEncode(x.from) == c?.pk).length}</div>
+                                            )}
+                                            <button 
+                                                className="delete-btn" 
+                                                onClick={(e) => deleteContact(c.pk, e)}
+                                                title="Supprimer ce contact"
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                        </div>
                                     </section>
-                                    
                                 </li>
                             ))}
                         </ul>
                     </div>
-
                 </section>
             )}
 

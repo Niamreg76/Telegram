@@ -4,7 +4,7 @@ import ContactList from './components/contactList'
 import { Contact } from './models/contact.model'
 import * as NOSTRService from './service/nostr.service'
 import * as MessageService from './service/message.service'
-import { Send } from 'lucide-react'
+import { Send, Moon, Sun } from 'lucide-react'
 import { Message } from './models/message.models'
 import { nip19 } from 'nostr-tools'
 
@@ -12,11 +12,34 @@ function App() {
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessages, setNewMessages] = useState<Message[]>([]);
+    const [darkMode, setDarkMode] = useState<boolean>(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     const [message, setMessage] = useState<string>("")
 
+    // Initialisation du mode sombre basé sur les préférences de l'utilisateur
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            setDarkMode(true);
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    }, []);
+
+    // Gestion du basculement du mode sombre
+    const toggleDarkMode = () => {
+        setDarkMode(!darkMode);
+        if (!darkMode) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+        }
+    };
 
     const handleMessageReception = useCallback((msg: Message) => {
         setNewMessages((prev) => [...prev, msg]);
@@ -70,6 +93,10 @@ function App() {
 
     return (
         <div className="app-container">
+            <button className="dark-mode-toggle" onClick={toggleDarkMode}>
+                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            
             <div className="messenger-layout">
                 <div className="sidebar-container">
                     <ContactList
