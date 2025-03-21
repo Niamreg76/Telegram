@@ -85,7 +85,7 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
                 <section className="profile-section">
                     <h3>Mon Profil</h3>
                     <div className="profile-info">
-                        <label>Private Key :</label>
+                        <label>Ma clé privée :</label>
                         <div className="copy-password-input-container">
                             <input
                                 type="text"
@@ -98,7 +98,7 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
                             </button>
                         </div>
                         
-                        <label>Public Key :</label>
+                        <label>Ma clé public :</label>
                         <div className="copy-password-input-container">
                             <input
                                 type="text"

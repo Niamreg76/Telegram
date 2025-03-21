@@ -105,11 +105,12 @@ body, html, #root {
 
 .sidebar ul li {
   padding: 15px;
-  border-bottom: 1px solid #555;
+  border-bottom: 1px solid #459fe6;
   cursor: pointer;
   background-color: #F0F2F5;
   margin-bottom: 10px;
   border-radius: 5px;
+  width: 100%;
 }
 
 
