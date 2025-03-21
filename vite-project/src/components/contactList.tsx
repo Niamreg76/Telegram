@@ -4,7 +4,7 @@ import * as ContactService from '../service/contact.service';
 import { FaClipboard, FaChevronDown, FaChevronUp } from 'react-icons/fa';  // Ajout des icônes pour l'accordéon
 import * as NOSTRService from '../service/nostr.service'
 
-function ContactList({ selectedContact, setSelectedContact, newMessages }: any) {
+function ContactList({ selectedContact, setSelectedContact, newMessages, setNewMessage }: any) {
     const [contacts, setContacts] = useState<Contact[]>([]);
 
     const [nPub, setNPub] = useState<string | undefined>();

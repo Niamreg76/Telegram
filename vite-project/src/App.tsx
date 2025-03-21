@@ -28,7 +28,7 @@ function App() {
     }, []) 
     
     useEffect(() => {
-        const news = newMessages.filter(x => nip19.npubEncode(x.from) == selectedContact?.pk);
+        const news = newMessages.filter(x => x.from == selectedContact?.pk);
         setMessages([...messages, ...news ])
     }, [newMessages])
 
@@ -75,6 +75,7 @@ function App() {
                         selectedContact={selectedContact}
                         setSelectedContact={setSelectedContact}
                         newMessages={newMessages}
+                        setNewMessage={setNewMessages}
                     />
                 </div>
 

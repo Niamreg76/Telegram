@@ -81,7 +81,7 @@ export async function sendMessage(destinationPk: string, message: string) : Prom
     return {
         at: eventTemplate.created_at,
         from: account.nPub,
-        to: destinationPk,
+        to: nip19.decode(destinationPk).data as string,
         content: message
     }
 }
