@@ -3,11 +3,10 @@ import { Relay, Subscription } from 'nostr-tools/relay'
 import { recivedMessage, setSelfNPub } from './message.service';
 
 import * as nip19 from 'nostr-tools/nip19'
+import * as nip04 from 'nostr-tools/nip04'
 import { Message } from '../models/message.models';
 
 export const RELAY_NAME = 'wss://relay.angor.io/';
-
-const selectedContact = "caca"
 
 type Account = { nPub: string; nSec: Uint8Array }
 
@@ -40,12 +39,12 @@ export function login(privateKey: string | null) {
         since: lastUpdate + 1,
         '#t': ['send-to-' + account.nPub]
     }], {
-        onevent(event) {
+        async onevent(event) {
             console.log('received message', event)
 
             localStorage.setItem('dispatch_contacts_lastupdate', Math.floor(Date.now() / 1000).toString());
 
-            recivedMessage(event.pubkey, decrypt(event.content, account!.nSec), event.created_at);
+            recivedMessage(event.pubkey, await decrypt(event.content, account!.nSec), event.created_at);
 
         },
     });
@@ -71,7 +70,7 @@ export async function sendMessage(destinationPk: string, message: string) : Prom
         kind: 1,
         created_at: Math.floor(Date.now() / 1000),
         tags: [['t', 'send-to-' + nip19.decode(destinationPk).data]],
-        content: encrypt(message, destinationPk),
+        content: await encrypt(message, destinationPk),
     }
 
     console.log('sending message', eventTemplate)
@@ -86,12 +85,15 @@ export async function sendMessage(destinationPk: string, message: string) : Prom
     }
 }
 
-
 // TODO
-function encrypt(str: string, nPub: string) { 
-    return str;
+async function encrypt(str: string, nPub: string) { 
+    if(!account) return '';
+
+    return await nip04.encrypt(account?.nSec, nPub, str);
 }
 
-function decrypt(str: string, nSec: Uint8Array) {
-    return str;
+async function decrypt(str: string, nSec: Uint8Array) {
+    if(!account) return '';
+
+    return await nip04.decrypt(account?.nSec, account?.nPub, str)
 }
