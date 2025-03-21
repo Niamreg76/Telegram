@@ -154,3 +154,18 @@ ul li p {
   color: #666;
 }
 
+
+
+.avatar {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #e187f8;
+  color: #fff;
+  text-align: center;
+  line-height: 30px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+

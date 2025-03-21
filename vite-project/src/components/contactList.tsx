@@ -145,20 +145,24 @@ function ContactList({ selectedContact, setSelectedContact, newMessages }: any) 
 
             {isLoggedIn && (
                 <section className="contact-section">
-                    <h3>Mes contacts</h3>
-                    <div className="contact-info">
-                        <ul>
-                            {contacts.map(c => (
-                                <li
-                                    key={c.pk}
-                                    className={selectedContact && selectedContact.pk == c.pk ? 'activate' : ''}
-                                    onClick={() => setSelectedContact(c)}
-                                >
-                                    {c.username}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+<h3>Mes contacts</h3>
+<div className="contact-info">
+    <ul>
+        {contacts.map(c => (
+            <li
+                key={c.pk}
+                className={selectedContact && selectedContact.pk === c.pk ? 'activate' : ''}
+                onClick={() => setSelectedContact(c)}
+            >
+                <div className="avatar">
+                    {c.username.charAt(0).toUpperCase()}
+                </div>
+                {c.username}
+            </li>
+        ))}
+    </ul>
+</div>
+
                 </section>
             )}
 
