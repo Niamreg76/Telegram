@@ -5,7 +5,7 @@ import { recivedMessage } from './message.service';
 import * as nip19 from 'nostr-tools/nip19'
 import { Message } from '../models/message.models';
 
-export const RELAY_NAME = 'wss://nostr.wine/';
+export const RELAY_NAME = 'wss://relay.angor.io';
 
 type Account = { nPub: string; nSec: Uint8Array }
 
