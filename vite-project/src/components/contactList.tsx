@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Contact } from "../models/contact.model";
 import * as ContactService from '../service/contact.service';
-import { FaClipboard } from 'react-icons/fa';  // Importing the copy icon from react-icons
+import { FaClipboard, FaChevronDown, FaChevronUp } from 'react-icons/fa';  // Ajout des icônes pour l'accordéon
 import * as NOSTRService from '../service/nostr.service'
 
 function ContactList({ selectedContact, setSelectedContact }: any) {
@@ -13,7 +13,8 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
     const [pk, setPk] = useState<string>('');
 
     const [username, setUsername] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Ajout d'un état pour savoir si l'utilisateur est connecté
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false); // État pour l'accordéon du profil
 
     useEffect(() => {
         setContacts(ContactService.getAllContacts());
@@ -33,7 +34,7 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
         setNPub(_pk);
         setNSec(_sk);
 
-        setIsLoggedIn(true); // Marquer comme connecté après un login réussi
+        setIsLoggedIn(true);
     }
 
     const submitLogin = (e: any) => {
@@ -45,17 +46,22 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
         setNPub(_pk);
         setNSec(_sk);
 
-        setIsLoggedIn(true); // Marquer comme connecté après un login réussi
+        setIsLoggedIn(true);
     }
 
     const handleCopy = (str: string | undefined) => {
         if (!str) return;
 
         navigator.clipboard.writeText(str).then(() => {
-            alert('Clé publique copiée dans le presse-papiers!');
+            alert('Clé copiée dans le presse-papiers!');
         }).catch(() => {
-            alert('Échec de la copie de la clé publique');
+            alert('Échec de la copie de la clé');
         });
+    }
+
+    // Fonction pour basculer l'état de l'accordéon
+    const toggleProfile = () => {
+        setIsProfileOpen(!isProfileOpen);
     }
 
     return (
@@ -80,37 +86,60 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
                 </section>
             )}
 
-            {/* Afficher la section "Mon profil" avec la clé publique après le login */}
+            {/* Afficher la section "Mon profil" avec accordéon après le login */}
             {isLoggedIn && (
                 <section className="profile-section">
-                    <h3>Mon Profil</h3>
-                    <div className="profile-info">
-                        <label>Ma clé privée :</label>
-                        <div className="copy-password-input-container">
-                            <input
-                                type="text"
-                                value={nSec}
-                                disabled
-                                className="copy-password-input"
-                            />
-                            <button className="copy-btn" onClick={() => handleCopy(nSec)}>
-                                <FaClipboard />
-                            </button>
-                        </div>
-                        
-                        <label>Ma clé public :</label>
-                        <div className="copy-password-input-container">
-                            <input
-                                type="text"
-                                value={nPub}
-                                disabled
-                                className="copy-password-input"
-                            />
-                            <button className="copy-btn" onClick={() => handleCopy(nPub)}>
-                                <FaClipboard />
-                            </button>
-                        </div>
+                    <img src="src/assets/logo.png" width="150px" className="logo" />
+
+                    {/* En-tête de l'accordéon avec icône */}
+                    <div 
+                        className="profile-header" 
+                        onClick={toggleProfile}
+                        style={{ 
+                            cursor: 'pointer', 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center',
+                            padding: '10px',
+                            backgroundColor: '#f5f5f5',
+                            borderRadius: '5px',
+                            marginBottom: isProfileOpen ? '10px' : '0'
+                        }}
+                    >
+                        <h3 style={{ margin: 0 }}>Mon Profil</h3>
+                        {isProfileOpen ? <FaChevronUp /> : <FaChevronDown />}
                     </div>
+
+                    {/* Contenu de l'accordéon qui s'affiche/se cache */}
+                    {isProfileOpen && (
+                        <div className="profile-info">
+                            <label>Ma clé privée :</label>
+                            <div className="copy-password-input-container">
+                                <input
+                                    type="text"
+                                    value={nSec}
+                                    disabled
+                                    className="copy-password-input"
+                                />
+                                <button className="copy-btn" onClick={() => handleCopy(nSec)}>
+                                    <FaClipboard />
+                                </button>
+                            </div>
+                            
+                            <label>Ma clé publique :</label>
+                            <div className="copy-password-input-container">
+                                <input
+                                    type="text"
+                                    value={nPub}
+                                    disabled
+                                    className="copy-password-input"
+                                />
+                                <button className="copy-btn" onClick={() => handleCopy(nPub)}>
+                                    <FaClipboard />
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </section>
             )}
 
@@ -133,10 +162,22 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
                 </section>
             )}
 
-            {/* Afficher la section des discussions juste après "Mon profil" */}
             {isLoggedIn && (
                 <form className="discussions-section" onSubmit={addContact}>
-                    
+                    <input 
+                        type="text" 
+                        placeholder="Nom d'utilisateur" 
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
+                    <input 
+                        type="text" 
+                        placeholder="Clé publique" 
+                        value={pk}
+                        onChange={(e) => setPk(e.target.value)}
+                        required
+                    />
                     <button type="submit">+ Ajouter un contact</button>
                 </form>
             )}
