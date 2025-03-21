@@ -38,6 +38,8 @@ export function login(privateKey: string | null) {
         '#t': ['send-to-' + account.nPub]
     }], {
         onevent(event) {
+            console.log("reciev a message !")
+
             recivedMessage(event.pubkey, decrypt(event.content, account!.nSec), event.created_at);
 
             localStorage.setItem('dispatch_contacts_lastupdate', Math.floor(Date.now() / 1000).toString());
@@ -64,7 +66,7 @@ export async function sendMessage(destinationPk: string, message: string) : Prom
     const eventTemplate = {
         kind: 1,
         created_at: Math.floor(Date.now() / 1000),
-        tags: [['t', 'send-to-' + destinationPk]],
+        tags: [['t', 'send-to-' + nip19.decode(destinationPk).data]],
         content: encrypt(message, destinationPk),
     }
 
