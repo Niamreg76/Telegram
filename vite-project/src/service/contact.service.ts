@@ -3,7 +3,7 @@ import { Contact } from "../models/contact.model";
 const KEY = 'dispatch_contacts';
 
 export function getAllContacts() : Contact[] {
-    let raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY);
     if(!raw) return [];
 
     return JSON.parse(raw) as Contact[];

@@ -51,7 +51,7 @@ function App() {
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault()
 
-        let content = message.trim();
+        const content = message.trim();
 
         if (!content || content === '' || !selectedContact) return;
 

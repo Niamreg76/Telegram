@@ -1,4 +1,4 @@
-import { generateSecretKey, getPublicKey, finalizeEvent, EventTemplate, } from 'nostr-tools/pure'
+import { generateSecretKey, getPublicKey, finalizeEvent } from 'nostr-tools/pure'
 import { Relay, Subscription } from 'nostr-tools/relay'
 import { recivedMessage, setSelfNPub } from './message.service';
 

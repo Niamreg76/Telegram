@@ -13,7 +13,7 @@ export function setSelfNPub(nPub: string) {
 }
 
 export function getAllMessages() : Message[] {
-    let raw = localStorage.getItem("messages");
+    const raw = localStorage.getItem("messages");
     return raw ? JSON.parse(raw)  : [];
 }
 
