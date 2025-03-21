@@ -46,6 +46,10 @@ function App() {
           setMessages(prev => [...prev, replyMessage])
         }, 1000 + Math.random() * 2000)
       }
+      if (selectedContact) {
+        NOSTRService.sendMessage(selectedContact.pk, message);
+        console.log("Message envoyé à " + selectedContact.pk + ": " + message);
+      }
     }
   }
 
