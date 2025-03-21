@@ -59,6 +59,7 @@ function App() {
             .then(msg => {
                 MessageService.addMessage(msg);
                 setMessages([...messages, msg]);
+                setMessage('');
             })
             .catch(err => alert(err));
     }

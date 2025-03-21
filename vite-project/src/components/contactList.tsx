@@ -3,8 +3,17 @@ import { Contact } from "../models/contact.model";
 import * as ContactService from '../service/contact.service';
 import { FaClipboard, FaChevronDown, FaChevronUp } from 'react-icons/fa';  // Ajout des icônes pour l'accordéon
 import * as NOSTRService from '../service/nostr.service'
+import { nip19 } from "nostr-tools";
+import { Message } from "../models/message.models";
 
-function ContactList({ selectedContact, setSelectedContact, newMessages, setNewMessage }: any) {
+export type ContactListProps = {
+    selectedContact: Contact | null,
+    setSelectedContact: any,
+    newMessages: Message[],
+    setNewMessage: any
+ }
+
+function ContactList({ selectedContact, setSelectedContact, newMessages, setNewMessage }: ContactListProps) {
     const [contacts, setContacts] = useState<Contact[]>([]);
 
     const [nPub, setNPub] = useState<string | undefined>();
@@ -19,6 +28,14 @@ function ContactList({ selectedContact, setSelectedContact, newMessages, setNewM
     useEffect(() => {
         setContacts(ContactService.getAllContacts());
     }, []);
+
+    useEffect(() => {
+        const news: Message[] = newMessages.filter((x: Message) => nip19.npubEncode(x.from) == selectedContact?.pk);
+
+        if (news.length) {
+            setNewMessage(newMessages.filter((x: Message) => nip19.npubEncode(x.from) != selectedContact?.pk))
+        }
+    }, [newMessages])
 
     const addContact = (e: any) => {
         e.preventDefault();
@@ -92,13 +109,13 @@ function ContactList({ selectedContact, setSelectedContact, newMessages, setNewM
                     <img src="src/assets/logo.png" width="150px" className="logo" />
 
                     {/* En-tête de l'accordéon avec icône */}
-                    <div 
-                        className="profile-header" 
+                    <div
+                        className="profile-header"
                         onClick={toggleProfile}
-                        style={{ 
-                            cursor: 'pointer', 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
+                        style={{
+                            cursor: 'pointer',
+                            display: 'flex',
+                            justifyContent: 'space-between',
                             alignItems: 'center',
                             padding: '10px',
                             backgroundColor: '#f5f5f5',
@@ -125,7 +142,7 @@ function ContactList({ selectedContact, setSelectedContact, newMessages, setNewM
                                     <FaClipboard />
                                 </button>
                             </div>
-                            
+
                             <label>Ma clé publique :</label>
                             <div className="copy-password-input-container">
                                 <input
@@ -145,39 +162,48 @@ function ContactList({ selectedContact, setSelectedContact, newMessages, setNewM
 
             {isLoggedIn && (
                 <section className="contact-section">
-<h3>Mes contacts</h3>
-<div className="contact-info">
-    <ul>
-        {contacts.map(c => (
-            <li
-                key={c.pk}
-                className={selectedContact && selectedContact.pk === c.pk ? 'activate' : ''}
-                onClick={() => setSelectedContact(c)}
-            >
-                <div className="avatar">
-                    {c.username.charAt(0).toUpperCase()}
-                </div>
-                {c.username}
-            </li>
-        ))}
-    </ul>
-</div>
+                    <h3>Mes contacts</h3>
+                    <div className="contact-info">
+                        <ul>
+                            {contacts.map(c => (
+                                <li
+                                    key={c.pk}
+                                    className={selectedContact && selectedContact.pk === c.pk ? 'activate' : ''}
+                                    onClick={() => setSelectedContact(c)}
+                                >
+                                    <section className="contact-header">
+                                        <section>
+                                            <div className="avatar">
+                                                {c.username.charAt(0).toUpperCase()}
+                                            </div>
+                                            {c.username}
+                                        </section>
+                                        
+                                        {newMessages.filter(x => nip19.npubEncode(x.from) == c?.pk).length > 0 && (
+                                            <div className="badge">{newMessages.filter(x => nip19.npubEncode(x.from) == c?.pk).length}</div>
+                                        )}
+                                    </section>
+                                    
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
                 </section>
             )}
 
             {isLoggedIn && (
                 <form className="discussions-section" onSubmit={addContact}>
-                    <input 
-                        type="text" 
-                        placeholder="Nom d'utilisateur" 
+                    <input
+                        type="text"
+                        placeholder="Nom d'utilisateur"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
                     />
-                    <input 
-                        type="text" 
-                        placeholder="Clé publique" 
+                    <input
+                        type="text"
+                        placeholder="Clé publique"
                         value={pk}
                         onChange={(e) => setPk(e.target.value)}
                         required
