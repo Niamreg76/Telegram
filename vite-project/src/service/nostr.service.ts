@@ -70,7 +70,7 @@ export async function sendMessage(destinationPk: string, message: string) : Prom
         kind: 1,
         created_at: Math.floor(Date.now() / 1000),
         tags: [['t', 'send-to-' + nip19.decode(destinationPk).data]],
-        content: await encrypt(message, destinationPk),
+        content: await encrypt(message, nip19.decode(destinationPk).data as string),
     }
 
     console.log('sending message', eventTemplate)
