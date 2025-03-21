@@ -68,6 +68,7 @@ export async function sendMessage(destinationPk: string, message: string) {
         content: encrypt(message, destinationPk),
     }
 
+    console.log('sending message', eventTemplate)
     const signedEvent = finalizeEvent(eventTemplate, account.nSec)
     return relay.publish(signedEvent);
 }
