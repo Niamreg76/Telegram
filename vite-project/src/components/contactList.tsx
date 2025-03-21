@@ -6,10 +6,13 @@ import * as NOSTRService from '../service/nostr.service'
 
 function ContactList({ selectedContact, setSelectedContact }: any) {
     const [contacts, setContacts] = useState<Contact[]>([]);
+
+    const [nPub, setNPub] = useState<string | undefined>();
+    const [nSec, setNSec] = useState<string | undefined>();
+
+    const [pk, setPk] = useState<string>('');
+
     const [username, setUsername] = useState('');
-    const [pk, setPk] = useState('');
-    const [selfPk, setSelfPk] = useState('');
-    const [privateKey, setPrivateKey] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false); // Ajout d'un état pour savoir si l'utilisateur est connecté
 
     useEffect(() => {
@@ -26,20 +29,29 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
 
     const generateRandomKey = () => {
         const [_sk, _pk] = NOSTRService.login(null);
-        setSelfPk(_pk);
-        setPrivateKey(_sk);
+
+        setNPub(_pk);
+        setNSec(_sk);
+
+        setIsLoggedIn(true); // Marquer comme connecté après un login réussi
     }
 
     const submitLogin = (e: any) => {
         e.preventDefault();
-        const [_sk, _pk] = NOSTRService.login(privateKey);
-        setSelfPk(_pk);
+        if (!nSec) return;
+
+        const [_sk, _pk] = NOSTRService.login(nSec);
+
+        setNPub(_pk);
+        setNSec(_sk);
+
         setIsLoggedIn(true); // Marquer comme connecté après un login réussi
     }
 
-    const handleCopy = (e: any) => {
-        e.preventDefault();
-        navigator.clipboard.writeText(selfPk).then(() => {
+    const handleCopy = (str: string | undefined) => {
+        if (!str) return;
+
+        navigator.clipboard.writeText(str).then(() => {
             alert('Clé publique copiée dans le presse-papiers!');
         }).catch(() => {
             alert('Échec de la copie de la clé publique');
@@ -57,22 +69,10 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
                         <input
                             type="text"
                             placeholder="Private key"
-                            value={privateKey}
-                            onChange={(e) => setPrivateKey(e.target.value)}
+                            value={nSec}
+                            onChange={(e) => setNSec(e.target.value)}
                             required
                         />
-
-                        <div className="copy-password-input-container">
-                            <input
-                                type="text"
-                                value={selfPk}
-                                disabled
-                                className="copy-password-input"
-                            />
-                            <button className="copy-btn" onClick={handleCopy}>
-                                <FaClipboard />
-                            </button>
-                        </div>
 
                         <button type="submit">Connexion</button>
                         <button type="button" onClick={() => generateRandomKey()}>Créer un compte</button>
@@ -85,14 +85,28 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
                 <section className="profile-section">
                     <h3>Mon Profil</h3>
                     <div className="profile-info">
+                        <label>Private Key :</label>
                         <div className="copy-password-input-container">
                             <input
                                 type="text"
-                                value={selfPk}
+                                value={nSec}
                                 disabled
                                 className="copy-password-input"
                             />
-                            <button className="copy-btn" onClick={handleCopy}>
+                            <button className="copy-btn" onClick={() => handleCopy(nSec)}>
+                                <FaClipboard />
+                            </button>
+                        </div>
+                        
+                        <label>Public Key :</label>
+                        <div className="copy-password-input-container">
+                            <input
+                                type="text"
+                                value={nPub}
+                                disabled
+                                className="copy-password-input"
+                            />
+                            <button className="copy-btn" onClick={() => handleCopy(nPub)}>
                                 <FaClipboard />
                             </button>
                         </div>
@@ -100,32 +114,31 @@ function ContactList({ selectedContact, setSelectedContact }: any) {
                 </section>
             )}
 
+            {isLoggedIn && (
+                <section className="contact-section">
+                    <h3>Mes contacts</h3>
+                    <div className="contact-info">
+                        <ul>
+                            {contacts.map(c => (
+                                <li
+                                    key={c.pk}
+                                    className={selectedContact && selectedContact.pk == c.pk ? 'activate' : ''}
+                                    onClick={() => setSelectedContact(c)}
+                                >
+                                    {c.username}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </section>
+            )}
+
             {/* Afficher la section des discussions juste après "Mon profil" */}
             {isLoggedIn && (
-                <section className="discussions-section">
-                    <ul>
-                        {contacts.map(c => (
-                            <li
-                                key={c.pk}
-                                className={selectedContact && selectedContact.pk == c.pk ? 'activate' : ''}
-                                onClick={() => setSelectedContact(c)}
-                            >
-                                {c.username}
-                            </li>
-                        ))}
-                    </ul>
-
-                    <h3>Discussions</h3>
-                    <ul>
-                        {['Alice', 'Bob', 'Charlie', 'Maëlys', 'Quentin', 'Roman'].map((name, index) => (
-                            <li key={index}>
-                                <strong>{name}</strong><p>Dernier message reçu : "Coucou, ça va ?"</p>
-                            </li>
-                        ))}
-                    </ul>
-
+                <form className="discussions-section" onSubmit={addContact}>
+                    
                     <button type="submit">+ Ajouter un contact</button>
-                </section>
+                </form>
             )}
         </div>
     );
