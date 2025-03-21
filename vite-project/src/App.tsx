@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import './App.css'
 import ContactList from './components/contactList'
 import { Contact } from './models/contact.model'
@@ -17,21 +17,20 @@ function App() {
 
     const [message, setMessage] = useState<string>("")
 
-    const a = () => { console.log(messages) }
 
-    const getContact = (msg: Message) => {
-        a();
-        if ('npub1977363kytcfrvzqq4vg9pnfmke333fzhs39rk42ctc869uqywwgq28dqy3' == nip19.npubEncode(msg.from)) {
-            setMessages([...messages, msg]);
-        } else {
-            setNewMessages([...newMessages, msg]);
-        }
-    }
+    const handleMessageReception = useCallback((msg: Message) => {
+        setNewMessages((prev) => [...prev, msg]);
+    }, [selectedContact]);
 
     useEffect(() => {
         NOSTRService.connect().catch(err => alert(err))
-        MessageService.addListener(getContact)
-    }, [])
+        MessageService.addListener((a: Message) => handleMessageReception(a))
+    }, []) 
+    
+    useEffect(() => {
+        const news = newMessages.filter(x => nip19.npubEncode(x.from) == selectedContact?.pk);
+        setMessages([...messages, ...news ])
+    }, [newMessages])
 
     useEffect(() => {
         if (!selectedContact) return;
@@ -106,7 +105,7 @@ function App() {
                                             className={`message-bubble ${nip19.npubEncode(msg.from) === selectedContact.pk ? "received" : "sent"}`}
                                         >
                                             <div className="message-content">{msg.content}</div>
-                                            <div className="message-timestamp">{formatTime(new Date(msg.at))}</div>
+                                            <div className="message-timestamp">{formatTime(new Date(msg.at * 1000))}</div>
                                         </div>
                                     ))
                                 )}

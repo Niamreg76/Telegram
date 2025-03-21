@@ -7,6 +7,8 @@ import { Message } from '../models/message.models';
 
 export const RELAY_NAME = 'wss://relay.angor.io/';
 
+const selectedContact = "caca"
+
 type Account = { nPub: string; nSec: Uint8Array }
 
 export let relay: Relay | undefined;
@@ -35,15 +37,16 @@ export function login(privateKey: string | null) {
 
     subscription = relay.subscribe([{
         kinds: [1],
-        since: lastUpdate,
+        since: lastUpdate + 1,
         '#t': ['send-to-' + account.nPub]
     }], {
         onevent(event) {
-            console.log("reciev a message !")
+            console.log('received message', event)
+
+            localStorage.setItem('dispatch_contacts_lastupdate', Math.floor(Date.now() / 1000).toString());
 
             recivedMessage(event.pubkey, decrypt(event.content, account!.nSec), event.created_at);
 
-            localStorage.setItem('dispatch_contacts_lastupdate', Math.floor(Date.now() / 1000).toString());
         },
     });
 
