@@ -1,5 +1,8 @@
 # Application de Chat en Ligne Nostr
 
+![image](https://github.com/user-attachments/assets/e446a850-957b-454c-a879-e03fda21dea7)
+
+
 Cette application est une application de chat en ligne construite avec React, TypeScript et Vite. Elle utilise le protocole Nostr pour la communication sécurisée entre les utilisateurs.
 
 ## Fonctionnalités
