@@ -1,11 +1,11 @@
 import { generateSecretKey, getPublicKey, finalizeEvent, EventTemplate, } from 'nostr-tools/pure'
 import { Relay, Subscription } from 'nostr-tools/relay'
-import { recivedMessage } from './message.service';
+import { recivedMessage, setSelfNPub } from './message.service';
 
 import * as nip19 from 'nostr-tools/nip19'
 import { Message } from '../models/message.models';
 
-export const RELAY_NAME = 'wss://nostr.wine/';
+export const RELAY_NAME = 'wss://relay.angor.io/';
 
 type Account = { nPub: string; nSec: Uint8Array }
 
@@ -29,6 +29,7 @@ export function login(privateKey: string | null) {
     const nSec = privateKey ? nip19.decode(privateKey).data as Uint8Array : generateSecretKey();
     account = { nSec, nPub: getPublicKey(nSec) };
 
+    setSelfNPub(account.nPub);
     // subscribe
     const lastUpdate = Number.parseInt(localStorage.getItem('dispatch_contacts_lastupdate') ?? Math.floor(Date.now() / 1000).toString());
 

@@ -1,10 +1,11 @@
 import { Message } from "../models/message.models";
 import { Contact } from "../models/contact.model";
+import { nip19 } from "nostr-tools";
 
 let selfNpub = '';
-const listener: any[] = [];
-export function addListener( a: any) {
-    listener.push(a);
+let listener: any;
+export function addListener(a: any) {
+    listener = a;
 }
 
 export function setSelfNPub(nPub: string) {
@@ -18,7 +19,8 @@ export function getAllMessages() : Message[] {
 
 export function getMessagesFromContact(contact: Contact) : Message[] {
     const messages = getAllMessages();
-    return messages.filter(x => x.from == contact.pk || x.to == contact.pk);
+    const pk = nip19.decode(contact.pk).data;
+    return messages.filter(x => x.from == pk || x.to == pk);
 }
 
 export function addMessage(message: Message) {
@@ -37,5 +39,5 @@ export function recivedMessage(nPub: string, content: string, timestamp: number)
     }
 
     addMessage(message);
-    listener.forEach(x => x(message));
+    listener(message);
 }
