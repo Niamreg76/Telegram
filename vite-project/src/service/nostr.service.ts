@@ -3,6 +3,8 @@ import { bytesToHex, hexToBytes } from '@noble/hashes/utils'
 import { Relay, Subscription } from 'nostr-tools/relay'
 import { recivedMessage } from './chat.service';
 
+import * as nip19 from 'nostr-tools/nip19'
+
 export const RELAY_NAME = 'wss://relay.mememaps.net/';
 
 type Account = { nPub: string; nSec: Uint8Array }
@@ -24,7 +26,7 @@ export function login(privateKey: string | null) {
     // generation des clefs
     if (account) logout();
 
-    const nSec = privateKey ? hexToBytes(privateKey) : generateSecretKey();
+    const nSec = privateKey ? nip19.decode(privateKey).data as Uint8Array : generateSecretKey();
     account = { nSec, nPub: getPublicKey(nSec) };
 
     // subscribe
@@ -44,7 +46,7 @@ export function login(privateKey: string | null) {
 
     localStorage.setItem('dispatch_contacts_lastupdate', Math.floor(Date.now() / 1000).toString());
 
-    return [bytesToHex(account.nSec), account.nPub];
+    return [nip19.nsecEncode(account.nSec), nip19.npubEncode(account.nPub)];
 }
 
 export function logout() {
