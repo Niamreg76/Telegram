@@ -3,7 +3,6 @@ import { Relay, Subscription } from 'nostr-tools/relay'
 import { recivedMessage, setSelfNPub } from './message.service';
 
 import * as nip19 from 'nostr-tools/nip19'
-import * as nip44 from 'nostr-tools/nip44'
 import * as nip04 from 'nostr-tools/nip04'
 import { Message } from '../models/message.models';
 
@@ -90,11 +89,15 @@ export async function sendMessage(destinationPk: string, message: string) : Prom
 async function encrypt(str: string, nPub: string) { 
     if(!account) return '';
 
-    return await nip04.encrypt(account.nSec, nPub, str);
+    return str;
+
+    //return await nip04.encrypt(account.nSec, nPub, str);
 }
 
 async function decrypt(str: string, nSec: Uint8Array) {
     if(!account) return '';
 
-    return await nip04.decrypt(nSec, account.nPub, str);
+    return str;
+
+    //return await nip04.decrypt(nSec, account.nPub, str);
 }
